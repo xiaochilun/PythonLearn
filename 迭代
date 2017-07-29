@@ -1,0 +1,35 @@
+1. 迭代
+>>> d = {'a':1, 'b':2, 'c':3}    # dict也就是dictionary字典,key:value
+>>> for i in d:
+...     print(i)
+...
+a
+b
+c
+
+默认情况下，dict迭代的是key。
+~~~如何迭代values？
+>>> for v in d.values():
+...     print(v)
+...
+1
+2
+3
+~~~如果要同时迭代key和value，可以用for k, v in d.items()
+
+
+只要作用于可迭代的对象就可以用for循环，而不是像java需要index。
+~~~如何判断对象是否是可迭代的？
+>>> from collections import Iterable
+>>> isinstance(d, Iterable)
+True
+
+
+~~~如果要对list实现类似Java那样的下标循环怎么办？
+>>> for i, v in enumerate(d.values()):
+...     print(i, v)
+...
+0 1
+1 2
+2 3
+>>>
