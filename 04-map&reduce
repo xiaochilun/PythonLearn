@@ -1,0 +1,68 @@
+Python内建了map()和reduce()函数。
+
+map函数使用举例：
+>>> def f(x):
+...     return x * x
+...
+>>> r = map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+>>> list(r)
+[1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+结果r是一个Iterator,惰性序列。
+
+
+reduce函数使用举例：
+reduce把一个函数作用在一个序列[x1, x2, x3, ...]上，这个函数必须接收两个参数，reduce把结果继续和序列的下一个元素做累积计算.
+>>> def add(x, y):
+...     return x+y
+...
+>>> reduce(add, [1, 2, 3, 4])
+10
+
+str转换成int例子：
+>>> from functools import reduce
+>>> def fn(x, y):
+...     return x * 10 + y
+...
+>>> def char2num(s):
+...     return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
+...
+>>> reduce(fn, map(char2num, '13579'))
+13579
+
+练习题1：
+#题目 利用map()函数，把用户输入的不规范的英文名字，变为首字母大写，其他小写的规范名字。
+#输入：['adam', 'LISA', 'barT']，输出：['Adam', 'Lisa', 'Bart']：
+# capitalize method :Return a copy of the string with its first character capitalized and the rest lowercased.
+
+def name2Name():
+    L = ['adam', 'LISA', 'barT']
+    def lower2Uper(s):
+        return s.lower().capitalize()
+    L1 = map(lower2Uper, L)
+    return list(L1)
+	
+	
+练习题2：
+Python提供的sum()函数可以接受一个list并求和，请编写一个prod()函数，可以接受一个list并利用reduce()求积：
+from functools import reduce
+
+def prod(list):
+    def area(x, y):
+        return x * y
+    return reduce(area, list)
+
+
+练习题3：
+利用map和reduce编写一个str2float函数，把字符串'123.456'转换成浮点数123.456：
+
+from functools import reduce
+def str2float(s):
+    index = len(s) - 1 - s.find('.')
+    s = s.replace('.', '')
+    def fn(x, y):
+        return x * 10 + y
+    def char2num(s):
+        return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
+    r = reduce(fn, map(char2num, s)) / 10**index
+    return r
