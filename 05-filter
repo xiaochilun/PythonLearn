@@ -1,0 +1,39 @@
+Python内建的filter()函数用于过滤序列。
+
+和map()类似，filter()也接收一个函数和一个序列。和map()不同的是，filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
+
+例如，在一个list中，删掉偶数，只保留奇数，可以这么写：
+
+def is_odd(n):
+    return n % 2 == 1
+
+list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15]))
+# 结果: [1, 5, 9, 15]
+false则丢弃。
+
+题：获取所有的素数
+从2以后的自然数除去2,3,5的倍数剩余的都是素数；
+lambda解释：
+匿名函数, g = lambda x:x+1
+:左侧理解为入口参数，右侧理解为函数体
+def _odd_iter():
+    n = 1
+    while True:
+        n = n + 2
+        yield n
+		
+def _not_divisible(n):
+    return lambda x: x % n > 0
+	
+def primes():
+    yield 2
+    it = _odd_iter()
+    while True:
+        n = next(it)
+        yield n
+        it = filter(_not_divisible(n), it)
+
+HomeWork：
+打印出所有对称数字，回数；
+def doble():
+    return filter(lambda i:str(i)==str(i)[::-1], range(1, 1000))
