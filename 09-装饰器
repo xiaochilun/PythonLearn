@@ -1,0 +1,92 @@
+在函数调用前后自动打印日志，但又不希望修改now()函数的定义，
+这种在代码运行期间动态增加功能的方式，称之为“装饰器”（Decorator）。
+
+1. 获取函数名字
+>>> def date():
+...     print('2017/08/29')
+...
+>>> date()
+2017/08/29
+
+>>> date.__name__
+'date'
+
+
+2. 装饰器的使用
+def log(func):
+    def wrapper(*args, **kw):# args--->Tuple, kw--->Key, Value
+        print('call %s(): ' % func.__name__)
+        return func(*args, **kw)
+    return wrapper
+	
+@log
+def now():
+    print('2017-08-29 : ')
+	
+>>> from pra1 import now
+>>> now()
+call now():
+2017-08-29 :
+
+相当于：now = log(now)
+
+3. 装饰器本身传入参数
+def log(text):
+    def decorator(func):
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+	
+@log('execute')
+def now():
+    print('2015-3-25')
+
+执行结果
+>>> now()
+execute now():
+2015-3-25
+
+相当于：now = log('execute')(now)
+
+4. 一个完整的decorator的写法如下
+import functools
+
+def log(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kw):
+        print('call %s():' % func.__name__)
+        return func(*args, **kw)
+    return wrapper
+	
+	
+针对带参数的decorator：
+import functools
+
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+	
+	
+HomeWork :
+请编写一个decorator，能在函数调用的前后打印出'begin call'和'end call'的日志。
+import functools
+
+def log(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kw):
+        print('begin call %s():' % func.__name__)
+        ret =  func(*args, **kw)
+        print('end call %s():' % func.__name__)
+        return ret
+    return wrapper
+	
+@log
+def now():
+    print('2018-06-24')
