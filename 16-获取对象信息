@@ -1,0 +1,54 @@
+1. type
+>>> type(abs)
+<class 'builtin_function_or_method'>
+
+>>> import types
+>>> def fn():
+...     pass
+...
+>>> type(fn)==types.FunctionType
+True
+>>> type(abs)==types.BuiltinFunctionType
+True
+>>> type(lambda x: x)==types.LambdaType
+True
+>>> type((x for x in range(10)))==types.GeneratorType
+True
+
+2. isinstance
+>>> isinstance(h, Animal)
+True
+
+>>> isinstance('a', str)
+True
+
+>>> isinstance([1, 2, 3], (list, tuple))
+True
+
+3. dir
+获取一个对象所有属性和方法，dir('')
+dir('a')   dir(abs)
+
+4. 操作对象状态
+>>> class MyObject(object):
+...     def __init__(self):
+...         self.x = 9
+...     def power(self):
+...         return self.x * self.x
+...
+>>> obj = MyObject()
+紧接着，可以测试该对象的属性：
+
+>>> hasattr(obj, 'x') # 有属性'x'吗？
+True
+>>> obj.x
+9
+>>> hasattr(obj, 'y') # 有属性'y'吗？
+False
+>>> setattr(obj, 'y', 19) # 设置一个属性'y'
+>>> hasattr(obj, 'y') # 有属性'y'吗？
+True
+>>> getattr(obj, 'y') # 获取属性'y'
+19
+>>> obj.y # 获取属性'y'
+19
