@@ -1,0 +1,182 @@
+***重写类的某些方法：__init__ ， __str__ 等等。
+
+__repr__ : 开发者看到的   print(s)
+__str__  : 用户看到的     s
+
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return 'Student (name: %s)' % self.name
+
+    __repr__ = __str__
+
+
+***斐波那契数列
+
+class Fib(object):
+    def __init__(self):
+        self.a, self.b = 0, 1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b
+        if self.a > 100:
+            raise StopIteration()
+        return self.a
+
+
+>>> for f in Fib():
+...     print(f)
+...
+1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+
+
+*** __getitem__:
+
+Fib实例虽然能作用于for循环，看起来和list有点像，但是，把它当成list来使用还是不行，比如，取第5个元素：
+>>> Fib()[5]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'Fib' object does not support indexing
+
+要表现得像list那样按照下标取出元素，需要实现__getitem__()方法：
+class Fib(object):
+    def __getitem__(self, item):
+        a, b = 1, 1
+        for x in range(item):
+            a, b = b, a + b
+        return a
+
+>>> f = Fib()
+>>> f[0]
+1
+
+
+***却不能像list那样使用切片方法：
+>>> f[0:5]
+error
+原因是__getitem__()传入的参数可能是一个int，也可能是一个切片对象slice，所以要做判断：
+class Fib(object):
+    def __getitem__(self, item):
+        if isinstance(item, int):
+            a, b = 1, 1
+            for x in range(item):
+                a, b = b, a + b
+            return a
+
+        if isinstance(item, slice):
+            start = item.start
+            stop = item.stop
+            if start is None:
+                start = 0
+            a, b = 1, 1
+            li = []
+            for x in range(stop):
+                if x >= start:
+                    li.append(a)
+                a, b = b, a + b
+            return li
+
+
+>>> f = Fib()
+>>> f[0:5]
+[1, 1, 2, 3, 5]
+>>> f[:10]
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+
+通过上面的方法，我们自己定义的类可以表现得和Python自带的list、tuple、dict没什么区别，
+这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。
+
+
+*** __getattr__
+
+正常情况下，当我们调用类的方法或属性时，如果不存在，就会报错。比如定义Student类：
+写一个__getattr__()方法，动态返回一个属性
+class StudentAttr(object):
+
+    def __init__(self, name):
+        self.name = name
+
+    def __getattr__(self, item):
+        if item == 'score':
+            return 90
+
+返回函数也是完全可以的：
+class StudentAttr(object):
+
+    def __init__(self, name):
+        self.name = name
+
+    def __getattr__(self, item):
+        if item == 'age':
+            return lambda: 24
+
+>>> s.age()
+25
+
+只有类中没有声明这个属性才会在getattr中寻找。
+
+
+
+*** 动态getattr使用链式调用
+class Chain(object):
+
+    def __init__(self, attr=''):
+        self._attr = attr
+
+    def __getattr__(self, attr):
+        return Chain('%s/%s' % (self._attr, attr))
+
+    def __str__(self):
+        return self._attr
+
+    __repr__ = __str__
+
+>>> Chain('api').cms.login
+api/cms/login
+>>> Chain().api.cms.login
+/api/cms/login
+
+
+
+*** __call__
+一个对象实例可以有自己的属性和方法，当我们调用实例方法时，我们用instance.method()来调用;
+通过__call__方法我们可以直接在实例本身调用。
+
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, *args, **kwargs):
+        return 'Student (name: %s)' % self.name
+
+>>> s = Student('Jobs')
+>>> s()
+'Student (name: Jobs)'
+
+
+*** 判断某个对象是否可以被调用
+>>> callable(Student('jack'))
+True    # 上面Student类重写了__call__方法所以是Callable对象
+>>> callable(max)
+True
+>>> callable([1, 2, 3])
+False
+>>> callable(None)
+False
+>>> callable('str')
+False
