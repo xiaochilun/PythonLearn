@@ -1,0 +1,37 @@
+1. 定义枚举
+>>> Month = Enum('Month', ('Jan', 'Feb'))
+name:Jan
+member:Month.Jan
+member.value:1
+
+2. 查询枚举
+>>> Month
+<enum 'Month'>
+
+>>> Month.Jan
+<Month.Jan: 1>
+
+>>> for name, member in Month.__members__.items():
+...     print(name, '=>', member, ',', member.value)
+...
+Jan => Month.Jan , 1
+Feb => Month.Feb , 2
+
+3. 如果需要更精确地控制枚举类型，可以从Enum派生出自定义类：
+from enum import Enum, unique
+@unique #@unique装饰器可以帮助我们检查保证没有重复值。
+class Weekday(Enum):
+    Sun = 0  # Sun的value被设定为0
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+
+>>> from EnumPratice import Weekday
+>>> day1 = Weekday.Mon
+>>> print(day1)
+Weekday.Mon
+>>> day1.value
+1
